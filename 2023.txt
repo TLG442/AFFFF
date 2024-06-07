@@ -1,0 +1,98 @@
+Q2 
+const express = require('express');
+const app = express();
+app.use(express.json());
+
+1 .  The express.json() middleware is used to parse the incoming request bodies in jason format 
+     without middleware the req.body property will be undefined / or a Raw string ,when handling json data 
+
+     placement - it is placed correctly in the application . this ensures all the incoming json objects will be parsed .
+
+
+     potential improvements - adding a general error handling middleware could be benifitial
+
+                              adding a authorization middleware would be good for security
+                               
+                              adding morgan for logging functionality
+
+2. 200 Good ones 
+200 - successfull
+201 - created
+204 - after a delete request there is no content to send back                              
+   400 Fucked up
+400 - bad request
+401 - authentication error -> logging error 
+403 - authorization -> TRYING TO access admins account with a user account
+404 - not found
+429 - too many requests 
+
+   500 - server fucked up
+500 -internal server error
+502 - bad gateway
+503 - service unavailable    
+
+
+in get products 
+204 success message means no data but in the code it checks if the product is found so no need for using 204 use 200 instead 
+
+403 means authorization error . that means client is authenticated by not authorized .for example if you try to access admins account using users email and password the request will denied with 403 
+status message in this occasion we have to use 404 not found status code 
+
+in post orders 
+in here 401 means authentication error it means user is not authenticated . but in this request it is a bad request so the status code should be 
+400 
+
+200 means successful but when something is created we use 201 instead
+
+
+
+c. jason web token - > jwts are stateless means server side doesent need to keep theire status tracked  thus makeing scalling easier 
+                     jwts can be digitally signed with a secret key . this ensures the token manipulation 
+                     jwts can store jason data  . so in the token we can store things like user roles , permitions etc
+
+
+d.  1. Single Responsibility Principle (SRP)
+Assessment:
+
+Each route handler (GET /products/:id and POST /orders) currently handles multiple responsibilities such as data access, request validation, and response handling.
+Recommendations:
+
+Separation of Concerns: Separate concerns by creating dedicated services or controllers responsible for handling specific tasks:
+
+ProductService: Handle product-related operations and business logic.
+OrderService: Manage order-related operations and business rules.
+Validation Middleware: Use middleware or validation libraries (like express-validator) to handle input validation separately from business logic.
+
+2. Open-Closed Principle (OCP)
+Assessment:
+
+The current implementation is not closed for modification; changes to business logic may require modifying existing routes.
+Recommendations:
+
+Strategy Pattern: Implement the strategy pattern to encapsulate different strategies (e.g., product retrieval, order creation) and inject them into route handlers.
+Use Dependency Injection: Use dependency injection to inject dependencies into route handlers, making it easier to replace components without modifying the handler itself.
+3. Liskov Substitution Principle (LSP)
+Assessment:
+
+Not directly applicable in this context as JavaScript/Node.js doesn’t enforce type hierarchies like statically typed languages.
+Recommendations:
+
+Ensure Interface Consistency: Ensure consistent use of interfaces (methods, properties) across classes and modules.
+4. Interface Segregation Principle (ISP)
+Assessment:
+
+The current implementation doesn't explicitly define interfaces, but it can benefit from modular design.
+Recommendations:
+
+Service Interfaces: Define clear interfaces for services (e.g., ProductService, OrderService) to ensure each module has specific and well-defined responsibilities.
+Handler Interfaces: Define request handler interfaces to separate routing from business logic and promote testability.
+5. Dependency Inversion Principle (DIP)
+Assessment:
+
+The current implementation tightly couples route handlers with database access.
+Recommendations:
+
+Dependency Injection (DI): Use dependency injection to inject dependencies (e.g., database connection, service instances) into route handlers, promoting loose coupling and testability.
+Repository Pattern: Implement a repository pattern to abstract data access from business logic, making it easier to mock data sources in tests.  
+
+
